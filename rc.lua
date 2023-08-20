@@ -10,6 +10,8 @@ local wibox = require("wibox")
 -- Theme handling library
 local beautiful = require("beautiful")
 -- Notification library
+beautiful.init("some_theme.lua")
+local bling = require("bling")
 local naughty = require("naughty")
 -- Declarative object management
 local ruled = require("ruled")
@@ -19,9 +21,33 @@ local hotkeys_popup = require("awful.hotkeys_popup")
 -- when client with a matching name is opened:
 require("awful.hotkeys_popup.keys")
 
--- {{{ Error handling
--- Check if awesome encountered an error during startup and fell back to
--- another config (This code will only ever execute for the fallback config)
+
+--{{{Bling
+--Вспышка при фокусе
+bling.module.flash_focus.enable()
+-- bling.widget.window_switcher:setup{
+--     opacity = 0.8,
+-- }
+bling.widget.window_switcher.enable {
+    type = "thumbnail", -- set to anything other than "thumbnail" to disable client previews
+
+    -- keybindings (the examples provided are also the default if kept unset)
+    hide_window_switcher_key = "Escape", -- The key on which to close the popup
+    minimize_key = "n",                  -- The key on which to minimize the selected client
+    unminimize_key = "N",                -- The key on which to unminimize all clients
+    kill_client_key = "q",               -- The key on which to close the selected client
+    cycle_key = "Tab",                   -- The key on which to cycle through all clients
+    previous_key = "Left",               -- The key on which to select the previous client
+    next_key = "Right",                  -- The key on which to select the next client
+    vim_previous_key = "h",              -- Alternative key on which to select the previous client
+    vim_next_key = "l",                  -- Alternative key on which to select the next client
+
+    cycleClientsByIdx = awful.client.focus.byidx,               -- The function to cycle the clients
+    filterClients = awful.widget.tasklist.filter.currenttags,   -- The function to filter the viewed clients
+}
+       
+--}}}
+--{{{
 naughty.connect_signal("request::display_error", function(message, startup)
     naughty.notification {
         urgency = "critical",
@@ -34,13 +60,14 @@ end)
 
 --АВТОСТАРТ
 awful.spawn.with_shell(
-  'pkill xwinwrap;' ..
+ 
   'pkill picom;' ..
+  'picom -b;' ..
   'pkill setxkbmap;' ..
   'setxkbmap us,ru -option "grp:alt_shift_toggle";' ..
-  '~/scripts/wallpaper-wrap;' ..
-  'picom -b;' ..
-  'xsetroot -cursor_name left_ptr'
+  
+  'xsetroot -cursor_name left_ptr' 
+  
 )
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
@@ -71,8 +98,8 @@ myawesomemenu = {
    { "edit config", editor_cmd .. " " .. awesome.conffile },
    { "restart", awesome.restart },
    { "quit", function() awesome.quit() end },
-   {"Poweroff", terminal .. "poweroff" },
-   {"Reboot", terminal .. "reboot" },
+   {"Poweroff", terminal .. "systemcttl poweroff" },
+   {"Reboot", terminal .. "systemcttl reboot" },
 }
 
 mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesome_icon },
@@ -128,19 +155,14 @@ screen.connect_signal("request::wallpaper", function(s)
 end)
 --}}}
 
-
-
--- {{{ Wibar
 -- Индикатор раскладки клавиатуры
 mykeyboardlayout = awful.widget.keyboardlayout()
 -- Часы текст
 mytextclock = wibox.widget.textclock()
 
-
-
 screen.connect_signal("request::desktop_decoration", function(s)
     -- Each screen has its own tag table.
-    awful.tag({ "1 ", "2 ", "3 ", "4 ", "5 ", "6 ", "7 ", "8 ", "9" }, s, awful.layout.layouts[2])
+    awful.tag({ "1 ", "2 ", "3 ", "4 ", "5 ", "6 ", "7 ", "8 ", "9 " }, s, awful.layout.layouts[2])
     
     -- Create a promptbox for each screen
     s.mypromptbox = awful.widget.prompt()
@@ -158,7 +180,23 @@ screen.connect_signal("request::desktop_decoration", function(s)
     -- Create a taglist widget
     s.mytaglist = awful.widget.taglist {
         screen  = s,
+        -- style   = {
+        --     shape = gears.shape.powerline
+        -- },
+        -- layout   = {
+        --     spacing = 2,
+        --     spacing_widget = {
+        --         color  = '#dddddd',
+        --         shape  = gears.shape.rounded_bar,
+        --         widget = wibox.widget.separator,
+        --     },
+        --     layout  = wibox.layout.fixed.horizontal
+        -- },
+       
         filter  =awful.widget.taglist.filter.all,
+        --border = 2,
+        --border_color = "#758",
+        shape  = gears.shape.rounded_rect,
         buttons = {
             awful.button({ }, 1, function(t) t:view_only() end),
             awful.button({ modkey }, 1, function(t)
@@ -174,13 +212,15 @@ screen.connect_signal("request::desktop_decoration", function(s)
                                         end),
             awful.button({ }, 4, function(t) awful.tag.viewprev(t.screen) end),
             awful.button({ }, 5, function(t) awful.tag.viewnext(t.screen) end),
+    
         }
     }
-
-    -- Create a tasklist widget
+    
+  
     s.mytasklist = awful.widget.tasklist {
         screen  = s,
         filter  = awful.widget.tasklist.filter.currenttags,
+       
         buttons = {
             awful.button({ }, 1, function (c)
                 c:activate { context = "tasklist", action = "toggle_minimization" }
@@ -190,7 +230,11 @@ screen.connect_signal("request::desktop_decoration", function(s)
             awful.button({ }, 5, function() awful.client.focus.byidx( 1) end),
         }
     }
+    
     local pad = 8
+
+
+
 
     s.bar = awful.popup{
         widget = {
@@ -202,8 +246,9 @@ screen.connect_signal("request::desktop_decoration", function(s)
             margins = 10,
             widget = wibox.container.margin
         },
+        shape  = gears.shape.rounded_rect,
         spacing = 10,
-        opacity = 0.66,
+        opacity = 0.8,
         screen = s,
         ontop = true,
         minimum_width = 30,
@@ -227,7 +272,8 @@ screen.connect_signal("request::desktop_decoration", function(s)
             
             widget = wibox.container.margin
         },
-        opacity = 0.66,
+        shape  = gears.shape.rounded_rect,
+        opacity = 0.8,
         screen = s,
         ontop = true,
         minimum_width = 1,
@@ -254,7 +300,8 @@ screen.connect_signal("request::desktop_decoration", function(s)
             
             widget = wibox.container.margin
         },
-        opacity = 0.66,
+        shape  = gears.shape.rounded_rect,
+        opacity = 0.8,
         screen = s,
         ontop = true,
         --minimum_width = 300,
@@ -267,9 +314,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
         visible = true,
         placement = awful.placement.top_right,
     }
-    -- Create the wibox
-    
-    
+  
     -- s.mywibox = awful.wibar {   
     --     width = 1920-2*pad,
     --     position = "left",
@@ -330,6 +375,10 @@ awful.mouse.append_global_mousebindings({
 -- {{{ Key bindings
 -- General Awesome keys
 awful.keyboard.append_global_keybindings({
+    awful.key({altkey }, "Tab", function()
+        awesome.emit_signal("bling::window_switcher::turn_on")
+    end, {description = "Window Switcher", group = "bling"}),
+
     awful.key({ modkey,           }, "s",      hotkeys_popup.show_help,
               {description="Подсказки", group="awesome"}),
   -------------Перезапуск и выход
@@ -599,7 +648,7 @@ ruled.client.connect_signal("request::rules", function()
             instance = { "copyq", "pinentry" },
             class    = {
                 "Arandr", "Blueman-manager", "Gpick", "Kruler", "Sxiv",
-                "Tor Browser", "Wpa_gui", "veromix", "xtightvncviewer"
+                "Tor Browser", "Wpa_gui", "veromix", "xtightvncviewer", "telegram-desktop",
             },
             -- Note that the name property shown in xprop might be set slightly after creation of the client
             -- and the name shown there might not match defined rules here.
@@ -649,21 +698,20 @@ end)
 
 
 
-
--- {{{ Titlebars
--- Add a titlebar if titlebars_enabled is set to true in the rules.
 -- client.connect_signal("request::titlebars", function(c)
 --     -- buttons for the titlebar
---     local buttons = {
+--     local buttons = gears.table.join(
 --         awful.button({ }, 1, function()
---             c:activate { context = "titlebar", action = "mouse_move"  }
+--             c:emit_signal("request::activate", "titlebar", {raise = true})
+--             awful.mouse.client.move(c)
 --         end),
 --         awful.button({ }, 3, function()
---             c:activate { context = "titlebar", action = "mouse_resize"}
---         end),
---     }
---
---     awful.titlebar(c).widget = {
+--             c:emit_signal("request::activate", "titlebar", {raise = true})
+--             awful.mouse.client.resize(c)
+--         end)
+--     )
+
+--     awful.titlebar(c) : setup {
 --         { -- Left
 --             awful.titlebar.widget.iconwidget(c),
 --             buttons = buttons,
@@ -671,11 +719,11 @@ end)
 --         },
 --         { -- Middle
 --             { -- Title
---                 halign = "center",
+--                 align  = "center",
 --                 widget = awful.titlebar.widget.titlewidget(c)
 --             },
 --             buttons = buttons,
---             layout  = wibox.layout.flex.horizontal
+--             layout  = wibox.layout.align.horizontal
 --         },
 --         { -- Right
 --             awful.titlebar.widget.floatingbutton (c),
@@ -688,7 +736,7 @@ end)
 --         layout = wibox.layout.align.horizontal
 --     }
 -- end)
--- }}}
+
 
 -- {{{ Notifications
 
