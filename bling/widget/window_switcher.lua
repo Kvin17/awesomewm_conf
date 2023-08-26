@@ -211,7 +211,7 @@ local enable = function(opts)
     local opts = opts or {}
 
     local type = opts.type or "thumbnail"
-    local background = beautiful.window_switcher_widget_bg or "#272727"
+    local background = beautiful.window_switcher_widget_bg or "#000000"
     local border_width = beautiful.window_switcher_widget_border_width or dpi(3)
     local border_radius = beautiful.window_switcher_widget_border_radius
         or dpi(8)
@@ -221,9 +221,9 @@ local enable = function(opts)
     local client_icon_horizontal_spacing = beautiful.window_switcher_client_icon_horizontal_spacing
         or dpi(5)
     local client_width = beautiful.window_switcher_client_width
-        or dpi(type == "thumbnail" and 150 or 500)
+        or dpi(type == "thumbnail" and 250 or 500)
     local client_height = beautiful.window_switcher_client_height
-        or dpi(type == "thumbnail" and 250 or 50)
+        or dpi(type == "thumbnail" and 300 or 300)
     local client_margins = beautiful.window_switcher_client_margins or dpi(10)
     local thumbnail_margins = beautiful.window_switcher_thumbnail_margins
         or dpi(5)
@@ -236,7 +236,7 @@ local enable = function(opts)
     local name_normal_color = beautiful.window_switcher_name_normal_color
         or "#FFFFFF"
     local name_focus_color = beautiful.window_switcher_name_focus_color
-        or "#09bc8a"
+        or "#0cc0ab"
     local icon_valign = beautiful.window_switcher_icon_valign or "center"
     local icon_width = beautiful.window_switcher_icon_width or dpi(40)
 
@@ -262,7 +262,7 @@ local enable = function(opts)
     local filterClients = opts.filterClients or awful.widget.tasklist.filter.currenttags
 
     local window_switcher_box = awful.popup({
-        bg = "#27272700",
+        bg = "#ffffff00",
         visible = false,
         ontop = true,
         opacity = 0.9,
