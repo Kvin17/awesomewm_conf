@@ -11,14 +11,14 @@ local themes_path = gfs.get_themes_dir()
 local theme = {}
 
 theme.font          = "Go Mono 12"
-theme.bg_normal     = "#000000cc"
+theme.bg_normal     = "#000000"
 theme.bg_focus      = "#53dbb4"
 theme.bg_urgent     = "#0cc0ab"
-theme.bg_minimize   = "#000000cc"
+theme.bg_minimize   = "#000000"
 theme.bg_systray    = theme.bg_normal
 
 theme.fg_normal     = "#ffffff"
-theme.fg_focus      = "#000000cc"
+theme.fg_focus      = "#000000"
 theme.fg_urgent     = "#ffffff"
 theme.fg_minimize   = "#d5bbb1"
 theme.useless_gap   = dpi(3)
@@ -73,7 +73,7 @@ theme.menu_width  = dpi(100)
 -- beautiful.variable in your rc.lua
 --theme.bg_widget = "#cc0000"
 
-theme.wallpaper = "/home/zhenya/.wallpaper/img/1.jpg"
+--theme.wallpaper = "/home/zhenya/.wallpaper/img/3.jpg"
 
 -- You can use your own layout icons like this:
 theme.layout_fairh = themes_path.."default/layouts/fairhw.png"
